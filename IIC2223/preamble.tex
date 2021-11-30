@@ -93,18 +93,9 @@
 \usepackage[small,bf,hang]{caption}        % captions
 \usepackage{subcaption}                    % adds subfigure & subcaption
 \usepackage{sidecap}                       % adds side captions
-\usepackage{hyperref}                      % add hyperlinks to references
-\usepackage[noabbrev,nameinlink]{cleveref} % better references than default \ref
 \usepackage{autonum}                       % only number referenced equations
 \usepackage{url}                           % urls
 \usepackage{cite}                          % well formed numeric citations
-% format hyperlinks
-\colorlet{linkcolour}{black}
-\colorlet{urlcolour}{blue}
-\hypersetup{colorlinks=true,
-    linkcolor=linkcolour,
-    citecolor=linkcolour,
-    urlcolor=urlcolour}
 
 % Plotting and Figures
 %--------------------------------------------------------------------------------------------
@@ -229,6 +220,18 @@
 \fancyfoot[LE,RO]{\thepage}
 \fancyfoot[LO,RE]{\textsl{\leftmark}}
 \setlength{\headheight}{15pt}
+
+
+% format hyperlinks
+\usepackage[colorlinks]{hyperref}          % add hyperlinks to references
+
+\colorlet{linkcolour}{black}
+\colorlet{urlcolour}{blue}
+\hypersetup{colorlinks=true,
+    linkcolor=linkcolour,
+    citecolor=linkcolour,
+    urlcolor=urlcolour}
+\usepackage[noabbrev,nameinlink]{cleveref} % better references than default \ref
 
 
 %-------------------------------------------------------------------------------
