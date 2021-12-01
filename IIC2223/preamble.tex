@@ -29,6 +29,9 @@
 \setlength{\parindent}{0cm}
 \setlength{\parskip}{2ex plus 0.5ex minus 0.2ex} % whitespace between paragraphs
 
+\setlist[itemize]{topsep=0pt} % itemize spacing
+\setlist[enumerate]{topsep=0pt} % enumerate spacing
+
 % Redefine \maketitle command with nicer formatting
 %--------------------------------------------------------------------------------------------
 \pretitle{
@@ -191,7 +194,7 @@
 \newtheorem*{claim}{Claim}
 % Spanish versions
 \newtheorem*{observacion}{Observación}
-\newtheorem*{postulado}{Postulado}
+\newtheorem*{proposicion}{Proposición}
 
 \AtEndEnvironment{ex}{\null\hfill$\diamond$}%
 \AtEndEnvironment{ej}{\null\hfill$\diamond$}%
@@ -235,6 +238,10 @@
     urlcolor=urlcolour}
 \usepackage[noabbrev,nameinlink]{cleveref} % better references than default \ref
 
+% Computer science
+\usepackage{algorithm2e}
+\RestyleAlgo{ruled}
+\SetKwProg{Fn}{Function}{ is}{end}
 
 % Specific
 \def\derives*{\overset{*}{\Rightarrow}}
