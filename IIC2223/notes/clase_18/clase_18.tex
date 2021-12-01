@@ -1,4 +1,54 @@
+% !TeX root = ../master/master.tex
+\documentclass[a4paper,twoside,master.tex]{article}
+\begin{document}
 \lecture{18}{22 Nov 2021}{Lema de bombeo para lenguajes libres de contexto}
 
+El propósito principal del lema de bombeo para lenguajes libres de contexto, es demostrar que algunas cosas no se pueden hacer.
 
-This is the main content of the lecture.
+\begin{lema}
+    Sea $L \subseteq \Sigma^{*}$. Si $L$ es un lenguaje libre de contexto, entonces $\exists N > 0$ tal que $\forall z \in L, |z| \ge N$ existe una descomposición $z = u v w x y$ con $vx \neq \epsilon$ y $|vwx| \le N$ tal que para todo $i \le 0$, $u \cdot v^i \cdot w \cdot x^i \cdot y \in L$
+\end{lema}
+
+Recordar que el lema de bombeo para lenguajes regulares, la idea del bombeo era repetir un ciclo indefinidamente, y continuar en el lenguaje.
+
+Para las gramáticas libres de contexto, es importante encontrar ciclos en los lenguajes libres de contexto, para poder encontrar lugares sobre los cuales bombear. Estos ciclos se encuentran en las recursiones de las gramáticas.
+
+\begin{notacion}
+    $h(t)$: altura del árbol $t$.
+\end{notacion}
+\begin{lema}
+    Si un árbol $t$ binario tiene $2^n$ hojas $\implies h(t) \ge n$.
+\end{lema}
+\begin{proof}
+    Si $t$ es un árbol con $2^0$ hojas, entonces $t$ solo tiene un solo nodo, y la altura es $0$. Si $t$ posee $2^{n + 1}$ hojas, y sean $t_1$ y $t_2$ los sub-árboles directos de $t$, entonces $h(t) = max(\{h(t_1), h(t_2)\}) + 1$. Por inducción, tenemos que o $h(t_1) \ge n$ y $h(t_2) \ge n$, por lo que $h(t) \ge n + 1$.
+\end{proof}
+
+Este lema puede ser usado para encontrar ciclos en los lenguajes libres de contexto, en la demostración del lema de bombeo.
+
+\begin{proof}
+    Sea $\mathcal{G} = (V, \Sigma, P, S)$ una gramática libre de contexto, tal que $\mathcal{L}(\mathcal{G}) = L$ y $\mathcal{G}$ está en forma normal de Chomsky.
+
+    Escoja $N = 2^{|V| + 1}$. Sea $z \in L$ tal que $|z| \ge 2^{|V| + 1}$. Sea $t$ el árbol de derivación de $\mathcal{G}$ sobre $z$.
+
+    Por el lema demostrado anteriormente, sabemos que la altura del $t$ es a lo menos $|V| + 1$. Por lo tanto, $\exists X \in V$ tal que $S \derives* u X y \derives* u v X x y \derives* u v w x y = z$ (notar que se vuelve a llegar a $X$ al menos en un paso). Dado que $\mathcal{G}$ está en forma normal de Chomsky, sabemos que no existen reglas unitarias, por lo que no se puede dar que $v x = \epsilon$. Además, $|v w x| \le N = 2^{|V| + 1}$.
+
+    \begin{lema}
+        Para $t$ árbol binario, si $h(t) \le n \implies$ \#hojas de $t \le 2^n$.
+    \end{lema}
+    \begin{proof}
+        Si $t$ es un árbol con altura $0$, entonces tiene $1$ hoja correspondiente al nodo base, y \#hojas $ = 1 \le 2^0$. Si $t$ tiene altura $n + 1$, entonces sus sub-árboles $t_1$ y $t_2$ poseen altura $n$, y a lo más $2^n$ hojas cada uno. Por lo tanto, \#hojas de $t = $ \#hojas de $t_1 + $ \#hojas de $t_2 \le 2^n \le 2^n + 2^n = 2^{n + 1}$.
+    \end{proof}
+
+    Escoja la primera variable $X$ que se repita desde el terminal hacia $S$ (desde abajo hacia arriba). Esa primera repetición debe aparecer antes de $|V| + 1$. Por lo tanto, la cantidad de hojas del sub-árbol que se arma desde $X$ es menor que $2^{|V| + 1}$, y en consecuencia, $|v w x| \le N = 2^{|V| + 1}$.
+
+    Entonces, existe la derivación:
+
+    \[
+        S \derives* u X y \derives* u v X x y \derives* u v^2 X x^2 y \derives* u v^3 X x^3 y \derives* ... \derives* u v^i w x^i y = z \in L
+        .
+    \]
+\end{proof}
+
+
+
+\end{document}
