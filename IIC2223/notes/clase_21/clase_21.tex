@@ -1,0 +1,95 @@
+% !TeX root = ../master/master.tex
+\documentclass[a4paper,twoside,master.tex]{article}
+\begin{document}
+\lecture{21}{22 Nov 2021}{PDA vs CFG}
+
+\subsection*{¿En qué se parecen CFG a PDA?}
+
+\begin{table*}[ht]
+    \centering
+    \begin{tabular}{ll}
+        Terminales ($\Sigma$) & Alfabeto Input ($\Sigma$) \\
+        Variables ($V$)       & Alfabeto Stack ($\Gamma$) \\
+        Producciones          & Transiciones              \\
+        $A \to \gamma$        & $pA \to q\gamma$          \\
+        $A \to a$             & $pA \to q$                \\
+        Derivaciones          & Ejecuciones               \\
+        Árbol de derivación   & Stack
+    \end{tabular}
+\end{table*}
+
+\begin{teorema}
+    Todo lenguaje libre de contexto puede ser descrito equivalentemente por una gramática libre de contexto y un autómata apilador.
+\end{teorema}
+
+\subsection*{Desde CFG a un PDA}
+
+\begin{teorema}
+    Para toda gramática libre de contexto $\mathcal{G}$ existe un autómata apilador alternativo $\mathcal{D}$ tal que $\mathcal{L}(\mathcal{G}) = \mathcal{L}(\mathcal{D})$
+\end{teorema}
+
+\subsection*{CFG $\to$ PDA}
+Sea $\cfg$ una CFG. Construimos un PDA alternativo $\mathcal{D}$ que acepta $\mathcal{L}(\mathcal{D})$
+$$\mathcal{D} = (V \cup \Sigma \cup \{  q_0, q_f \}, \Sigma, \Delta, q_0, \{ q_f \})$$
+La relación de transición $\Delta$ se define como:
+\begin{align}
+    \Delta = \  & \{ (q_0, \epsilon, S \cdot q_f) \}               & \cup \\
+                & \{ (X, \epsilon, \gamma) | X \to \gamma \in P \} & \cup \\
+                & \{ (a, a, \epsilon) | a \in \Sigma \}
+\end{align}
+
+\begin{ej}
+    Para la CFG $\mathcal{G}: S \to SS | aSb | \epsilon$ se construye el siguiente PDA $\pdaltautomata$:
+    \begin{itemize}
+        \item $Q = \{ V, a, b, q_0, q_f \}$
+        \item $\Sigma = \{ a, b \}$
+        \item $\Delta = \{ (q_0, \epsilon, S \cdot q_f), (S, \epsilon, \epsilon), (S, \epsilon, SS), (S, \epsilon, aSb), (a, a, \epsilon), (b, b, \epsilon) \}$
+    \end{itemize}
+\end{ej}
+
+\begin{proof}
+    Demostrar $\mathcal{L}(\mathcal{G}) = \mathcal{L}(\mathcal{D})$
+
+    Para cada $w \in \mathcal{L}(\mathcal{G})$ se debe encontrar una ejecución de aceptación de $\mathcal{D}$ sobre $w$. Para esto, se construye una ejecución de $\mathcal{D}$ sobre $w$ que recorre su árbol de derivación $\mathcal{T}$ en profundidad.
+
+    \textbf{Hipótesis de inducción}: Para todo $\mathcal{T}$ de $\mathcal{G}$ con altura $h$ tal que la raíz de $\mathcal{T}$ es igual a $X$ y $\mathcal{T}$ produce la palabra $w$, entonces $(X \cdot \gamma, w) \vdash^*_{\mathcal{D}} (\gamma, \epsilon)$ para todo $\gamma \in Q^+$.
+
+    \textbf{Caso base}: Para $h = 1$, se cumple que $\mathcal{T}$ produce $w = a$ para algún $a \in \epsilon$, y $\mathcal{T}$ consiste de un nodo $X$ y un hijo $X \to a$. Entonces para todo $\gamma \in Q^+$ se cumple que:
+    $$(X \cdot \gamma, a) \vdash_\mathcal{D} (a \cdot \gamma, a) \vdash_\mathcal{D} (\gamma, \epsilon)$$
+    Corresponde a una ejecución de $\mathcal{D}$ sobre $a$.
+
+    \textbf{Caso inductivo}: Supongamos que el árbol de derivación de $\mathcal{T}$ de $\mathcal{G}$ tiene altura $n$ tal que la raíz de $\mathcal{T}$ es $X$ y $\mathcal{T}$ produce la palabra $w$. Sea $w = u \cdot v$ y $X \to YZ$. Por HI, se tiene que para todo $\gamma_1, \gamma_2 \in Q^+$
+    $$(Y \cdot \gamma_1, u) \vdash^*_{\mathcal{D}} (\gamma_1, \epsilon)$$
+    $$(Z \cdot \gamma_2, v) \vdash^*_{\mathcal{D}} (\gamma_2, \epsilon)$$
+
+    Para $\gamma \in Q^+$ construimos la siguiente ejecución de $\mathcal{D}$ sobre $w = uv$:
+    $$(X \cdot \gamma) \vdash_\mathcal{D} (YZ \cdot \gamma, uv) \vdash^*_{\mathcal{D}} (Z\cdot \gamma, v) \vdash^*_{\mathcal{D}} (\gamma, \epsilon)$$
+
+    Por lo tanto, $\mathcal{L}(G) \subseteq \mathcal{L}(D)$
+
+    \todo{Prove $\mathcal{L}(D) \subseteq \mathcal{L}(G)$}
+
+\end{proof}
+
+\subsection*{PDA $\to$ CFG}
+
+\begin{teorema}
+    Para todo autómata apilador $\mathcal{P}$ existe una gramática libre de contexto $\mathcal{G}$ tal que $\mathcal{L}(\mathcal{P}) = \mathcal{L}(\mathcal{G})$
+\end{teorema}
+
+\begin{proof}
+    Sea $\pdautomata$ un PDA, los pasos para la demostración son los siguientes:
+    \begin{enumerate}
+        \item Convertir $\mathcal{P}$ a $\mathcal{P}'$ con un solo estado.
+        \item $\mathcal{P}'$ a $\mathcal{G}$ CFG.
+    \end{enumerate}
+
+    \textbf{Paso 2}: Sea $\mathcal{P}' = (\{ q \}, \Sigma, \Gamma, \Delta, q, \bot, \{ q \})$ PDA con un solo estado. Construimos la gramática $\mathcal{G} = (V, \Sigma, P, \bot)$ tal que $V = \Gamma$, y
+    \begin{itemize}
+        \item Si $qA \to_{\epsilon} q\alpha \in \Delta$ entonces $A \to \alpha \in P$
+        \item Si $qA \to_{a} q\alpha \in \Delta$ entonces $A \to a\alpha \in P$
+    \end{itemize}
+\end{proof}
+
+
+\end{document}

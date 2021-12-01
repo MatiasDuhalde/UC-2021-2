@@ -1,0 +1,169 @@
+% !TeX root = ../master/master.tex
+\documentclass[a4paper,twoside,master.tex]{article}
+\begin{document}
+\lecture{20}{22 Nov 2021}{Autómatas apiladores}
+
+Para poder construir un autómata que soporte lenguajes libres de contexto, necesita poder manejar cierta cantidad de memoria. Los autómatas apiladores son una forma de construir un autómata que soporte un lenguaje libre de contexto.
+
+La idea fundamental del autómata apilador, es que mantiene un stack de memoria adicional, sobre el cual puede leer el elemento en la cima del stack, y con operaciones pop/push, puede modificar su contenido.
+
+
+\begin{definicion}
+    Un autómata apilador (PushDown Automata, PDA) es una estructura: $\pdautomata$
+    \begin{itemize}
+        \item $Q$ es un conjunto de estados.
+        \item $\Sigma$ es el alfabeto de entrada.
+        \item $q_0 \in Q$ es el estado inicial.
+        \item $F$ es el conjunto de estados finales.
+        \item $\Gamma$ es el alfabeto del stack.
+        \item $\bot \in \Gamma$ es el elemento inicial del stack (representa que el stack está vacío).
+        \item $\Delta \subseteq (Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma) \times (Q \times \Gamma^*)$ es una relación finita de transición.
+    \end{itemize}
+\end{definicion}
+
+$\epsilon$-transiciones nos permiten manejar el stack sin tener que leer el input. Intuitivamente, la transición: $((p, a, A), (q, B_1B_2...B_k)) \in \Delta$, si está en el estado $p$, leyendo $a$, y en el tope del stack hay una $A$, entonces cambia al estado $q$, y modifica el tope $A$ por $B_1B_2...B_k$.
+
+Sea $\pdautomata$.
+
+\begin{notacion}
+    Dado una palabra $A_1A_2...A_k \in \Gamma^+$, decimos que:
+    \begin{itemize}
+        \item $A_1A_2...A_k$ es un stack (contenido).
+        \item $A_1$ es el tope del stack.
+        \item $A_2...A_k$ es la cola del stack.
+    \end{itemize}
+\end{notacion}
+
+\begin{definicion}
+    Una configuración de $\mathcal{P}$ es una tupla $\pdconfig$ tal que:
+    \begin{itemize}
+        \item $q \in Q$ es el estado actual.
+        \item $\gamma$ es el contenido del stack.
+        \item $w$ es el contenido del input.
+    \end{itemize}
+\end{definicion}
+
+\begin{definicion}
+    Decimos que una configuración $\pdconfig$:
+    \begin{itemize}
+        \item es inicial si $q \cdot \gamma = q_0 \cdot \bot$.
+        \item es final si $q \cdot \gamma = q_f \cdot \epsilon$ con $q_f \in F$ y $w = \epsilon$.
+    \end{itemize}
+\end{definicion}
+
+
+\begin{definicion}
+    Se define la relación $\vdash_\mathcal{P}$ de siguiente-paso entre configuraciones de $\mathcal{P}$:
+    $$(q_1 \cdot \gamma_1, w_1) \vdash_\mathcal{A} (q_2 \cdot \gamma_2, w_2)$$
+    Si y sólo si existe una transición $(q_1, a, A, q_2, \alpha) \in \Delta$ y $\delta \in \Gamma^*$ tal que:
+    \begin{itemize}
+        \item $w_1 = a \cdot w_2$
+        \item $\gamma_1 = A \cdot \gamma$
+        \item $\gamma_2 = \alpha \cdot \gamma$
+    \end{itemize}
+
+    Se define $\vdash^*_\mathcal{P}$ como la clausura refleja y transitiva de $\vdash_\mathcal{P}$.
+\end{definicion}
+
+\begin{definicion}
+    \begin{itemize}
+        \item $\mathcal{P}$ acepta $w$ si y sólo si, $(q_0\bot, w) \vdash^*_\mathcal{P} (q_f, \epsilon)$ para algún $q_f \in F$.
+        \item El lenguaje aceptado por $\mathcal{P}$ es $\mathcal{L}(\mathcal{P}) = \{ w \in \Sigma^* | \mathcal{P} \text{ acepta } w \}$.
+    \end{itemize}
+\end{definicion}
+
+\begin{ej}
+    Todas las palabras $w \in \{ [,] \}$ que tienen los paréntesis balanceados.
+    \begin{itemize}
+        \item $Q = \{ q_0, q_f \}$
+        \item $\Sigma = \{ [,] \}$
+        \item $\Gamma = \{ \bot, A \}$
+        \item $\delta = \{ (q_0, [, \bot, q_0, A\bot ), (q_0, [, A, q_0, AA ), (q_0, ], A, q_0, \epsilon ), (q_0, \epsilon, \bot, q_f, \epsilon ) \}$
+        \item $q_f \in F$
+    \end{itemize}
+\end{ej}
+
+\begin{ej}
+    Todas las palabras $w \in \{ a, b \}$ que son palíndromas.
+    \begin{itemize}
+        \item $Q = \{ q_0, q_1, q_f \}$
+        \item $\Sigma = \{ a, b \}$
+        \item $\Gamma = \{ \bot, A, B \}$
+        \item $\begin{aligned}
+                      \delta = \{
+                      (q_0, a, *, q_0, A*), (q_0, b, *, q_0, B*), (q_0, \epsilon, *, q_1, *), (q_1, a, A, q_1, \epsilon), (q_1, b, B, q_1, \epsilon), (q_1, \epsilon, \bot, q_f, \epsilon) \\
+                      (q_0, a, *, q_1, *), (q_0, b, *, q_1, *)
+                      \}
+                  \end{aligned}$
+        \item $q_f \in F$
+    \end{itemize}
+\end{ej}
+
+\hr
+
+Existe otra definición (menos común) de autómatas apiladores, que ayudan a entender mejor los algoritmos de evaluación para gramáticas, y es un poco más sencillo que la definición anterior.
+
+\begin{definicion}
+    Un PDA alternativo es una estructura $\pdaltautomata$. Intuitivamente, la transición: $(A_1...A_i, a, B_1...B_j) \in \Delta$ si el autómata apilador tiene $A_1...A_i$ en el tope del stack, está leyendo $a$, y cambia el tope a $B_1...B_j$.
+\end{definicion}
+
+\begin{definicion}
+    Una configuración de $\mathcal{D}$ es una tupla $(q_1...q_k, w) \in (Q^{+},\Sigma^{*})$ tal que $q_1...q_k$ es el contenido del stack con $q_1$ el tope del stack, y $w$ es el contenido del input.
+    Decimos que una configuración
+    \begin{itemize}
+        \item $(q_0, w)$ es inicial.
+        \item $(q_f, \epsilon)$ es final si $q_f \in F$.
+    \end{itemize}
+\end{definicion}
+
+\begin{definicion}
+    Se define la relación $\vdash_\mathcal{D}$ de siguiente-paso entre configuraciones de $\mathcal{D}$:
+    $$(\gamma_1, w_1) \vdash_\mathcal{D} (\gamma_2, w_2)$$
+    Si y sólo si existe una transición $(\alpha, a, \beta) \in \Delta$ tal que:
+    \begin{itemize}
+        \item $w_1 = a \cdot w_2$
+        \item $\gamma_1 = \alpha \cdot \gamma$
+        \item $\gamma_2 = \beta \cdot \gamma$
+    \end{itemize}
+
+    Se define $\vdash^*_\mathcal{D}$ como la clausura refleja y transitiva de $\vdash_\mathcal{D}$.
+\end{definicion}
+
+\begin{definicion}
+    \begin{itemize}
+        \item $\mathcal{D}$ acepta $w$ si y sólo si, $(q_0, w) \vdash^*_\mathcal{D} (q_f, \epsilon)$ para algún $q_f \in F$.
+        \item El lenguaje aceptado por $\mathcal{D}$ es $\mathcal{L}(\mathcal{D}) = \{ w \in \Sigma^* | \mathcal{D} \text{ acepta } w \}$.
+    \end{itemize}
+\end{definicion}
+
+\begin{teorema}
+    Para todo autómata apilador $\mathcal{P}$ existe un autómata apilador alternativo $\mathcal{D}$, y viceversa, tal que $\mathcal{L}(\mathcal{P}) = \mathcal{L}(\mathcal{D})$.
+\end{teorema}
+
+\begin{proof}
+    Sea $\pdautomata$ un PDA. Construimos un PDA alternativo $\mathcal{D}_\mathcal{P} = (Q', \Sigma', \Delta', q_0', F')$ tal que:
+    \begin{itemize}
+        \item $Q' = Q \cup \Gamma \cup \{ q_0' \}$
+        \item $F' = F$
+        \item $\Delta = \{ (q_0', \epsilon, q_0\bot) \} \cup \{ (pA, a, q\gamma) | (p,a,A, q, \gamma) \in \Delta \}$
+    \end{itemize}
+
+    \todo{Dem. $\mathcal{L}(\mathcal{P}) = \mathcal{L}(\mathcal{D}_\mathcal{P})$}
+
+    Sea $\pdaltautomata$ un PDA alternativo. Construimos  un PDA $\mathcal{P}_\mathcal{D} = (Q_1, \Sigma, \Gamma', \Delta', q_0', \bot', F')$ tal que:
+    \begin{itemize}
+        \item $Q = \{ q, q_f \} \cup \bigcup\limits_{t:(\alpha,a,\beta) \in \Delta} \{ \vec{t_i} | 1 \le i \le |\alpha| \} \cup \{ \overleftarrow{t_i} | 1 \le i \le |\beta| \}$
+        \item $\Gamma' = Q$
+        \item $\bot' = q_0$
+        \item $q_0' = q$
+        \item $F = \{ q_f \}$
+    \end{itemize}
+
+    \todo{$\Delta = ?$}
+    \todo{Dem. $\mathcal{L}(\mathcal{D}) = \mathcal{L}(\mathcal{P}_\mathcal{D})$}
+\end{proof}
+
+
+
+
+\end{document}
