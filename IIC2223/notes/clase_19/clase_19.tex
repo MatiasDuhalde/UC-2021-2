@@ -1,0 +1,58 @@
+% !TeX root = ../master/master.tex
+\documentclass[a4paper,twoside,master.tex]{article}
+\begin{document}
+\lecture{19}{22 Nov 2021}{Algoritmo CKY}
+
+Dado un lenguaje libre de contexto $L$ y una palabra $w$, ¿cómo verificamos si $w \in L$? Naïve approach:
+\begin{itemize}
+    \item Convertimos $\mathcal{G}$ en forma normal de Chomsky.
+    \item Probamos todas las derivaciones de altura a lo más $|w| + 1$
+    \item Si encontramos una derivación retornamos \texttt{TRUE}.
+\end{itemize}
+El riesgo de este approach es que en el peor caso se deberán probar hasta $2^{|w| + 1}$ derivaciones.
+
+
+Algoritmo CKY (Cocke-Kasami-Younger). Corresponde a un algoritmo en tiempo $\mathcal{O}(|w|^3 \cdot |\mathcal{G}|)$, y usa programación dinámica.
+
+Para la tabla, si $S \in X_{11}$, entonces $w \in \mathcal{L}(\mathcal{G})$.
+
+\begin{enumerate}
+    \item Para cada $i$, construimos $X_{ii} \subseteq V$ tal que: $X_{ii} = \{ X \in V | X \to a_i \in P \}$
+    \item Para cada $i$, construimos $X_{i(i+1)} \subseteq V$ tal que: $X_{i(i+1)} = \{ X \in V | X \to YZ \in P \text{ para algún } Y \in X_{ii} \wedge Z \in X_{(i+1)(i+1)} \}$
+    \item Para cada $i$, construimos $X_{i(i+k)} \subseteq V$ tal que: $X_{i(i+k)} = \{ X \in V | \exists j \in [i, i + k]. X \to YZ \in P \text{ para algún } Y \in X_{ij} \wedge Z \in X_{(j+1)(i+k)} \}$
+\end{enumerate}
+
+\begin{algorithm}
+    \caption{Algoritmo CKY}
+    \KwData{Una gramática $G = (V, \Sigma, P, S)$ y una palabra $w = a_1a_2...a_n$}
+    \KwResult{\texttt{TRUE} si $w \in \mathcal{L}(\mathcal{G})$}
+
+    \Fn{AlgoritmoCKY($\mathcal{G}, w$)}{
+        \For{$i \gets 1$ to $n$}{
+            $X_{ii} \gets \emptyset$\;
+            \For{$X \to c \in P$}{
+                \If{$c = a_i$}{
+                    $X_{ii} = X_{ii} \cup \{ X \}$\;
+                }
+            }
+        }
+        \For{$i \gets 1$ to $n - 1$}{
+            \For{$k \gets 1$ to $n - k$}{
+                $X_{i(i+k)} \gets \emptyset$\;
+                \For{$j \gets i$ to $i + k - 1$}{
+                    \For{$X \to YZ \in P$}{
+                        \If{$X \in X_{ij} \wedge Z \in X_{i+1 i + k}$}{
+                            $X_{i(i+k)} = X_{i(i+k)} \cup \{ X \}$\;
+                        }
+                    }
+                }
+            }
+        }
+        \Return{$S \in X_{1n}$}
+    }
+
+\end{algorithm}
+
+
+
+\end{document}

@@ -5,9 +5,9 @@
 
 El propósito principal del lema de bombeo para lenguajes libres de contexto, es demostrar que algunas cosas no se pueden hacer.
 
-\begin{lema}
+\begin{teorema}
     Sea $L \subseteq \Sigma^{*}$. Si $L$ es un lenguaje libre de contexto, entonces $\exists N > 0$ tal que $\forall z \in L, |z| \ge N$ existe una descomposición $z = u v w x y$ con $vx \neq \epsilon$ y $|vwx| \le N$ tal que para todo $i \le 0$, $u \cdot v^i \cdot w \cdot x^i \cdot y \in L$
-\end{lema}
+\end{teorema}
 
 Recordar que el lema de bombeo para lenguajes regulares, la idea del bombeo era repetir un ciclo indefinidamente, y continuar en el lenguaje.
 
@@ -42,13 +42,81 @@ Este lema puede ser usado para encontrar ciclos en los lenguajes libres de conte
     Escoja la primera variable $X$ que se repita desde el terminal hacia $S$ (desde abajo hacia arriba). Esa primera repetición debe aparecer antes de $|V| + 1$. Por lo tanto, la cantidad de hojas del sub-árbol que se arma desde $X$ es menor que $2^{|V| + 1}$, y en consecuencia, $|v w x| \le N = 2^{|V| + 1}$.
 
     Entonces, existe la derivación:
-
     \[
         S \derives* u X y \derives* u v X x y \derives* u v^2 X x^2 y \derives* u v^3 X x^3 y \derives* ... \derives* u v^i w x^i y = z \in L
         .
     \]
 \end{proof}
 
+Contra-positivo del lema de bombeo para lenguajes libres de contexto.
+
+\begin{teorema}
+    Sea $L \subseteq \Sigma^{*}$. Si $L$ es un lenguaje libre de contexto, entonces $\forall N > 0$ tal que $\exists z \in L, |z| \ge N$, se cumple que para para toda descomposición $z = u v w x y$ con $vx \neq \epsilon$ y $|vwx| \le N$, $\exists i \le 0$, $u \cdot v^i \cdot w \cdot x^i \cdot y \in L$
+\end{teorema}
+
+Similar al lema de bombeo para lenguajes regulares, se puede ver como un juego contra un demonio:
+\begin{enumerate}
+    \item Demonio escoge $N > 0$
+    \item Uno escoge $z\in L$ con $|z| \ge N$
+    \item Demonio escoge $u v w x y = z$ con $vx \neq \epsilon$ y $|vwx| \le N$
+    \item Uno escoge $i \ge 0$
+    \item Si $u \cdot v^i \cdot w \cdot x^i \cdot y \notin L$ ganamos.
+    \item Si $u \cdot v^i \cdot w \cdot x^i \cdot y \in L$ gana el demonio.
+\end{enumerate}
+
+\begin{notacion}
+    $|w|_{a} = \text{Número de apariciones de a en w}$
+\end{notacion}
+
+\begin{ej}
+    $a^n b^n c^n$ no es un lenguaje libre de contexto.
+    \begin{enumerate}
+        \item Demonio escoge $N > 0$
+        \item Uno escoge $a^N b^N c^N$ con $|a^N b^N c^N| \ge N$
+        \item Demonio escoge $uvwxy = a^N b^N c^N$ con $vx \neq \epsilon$ y $|vwx| \le N$
+        \item Uno escoge $i = 2$
+    \end{enumerate}
+    Dado que $uvwxy = a^Nb^Nc^N$ y $|vwx| \le N$, entonces $vwx \in \mathcal{L}(a^*b^*)$ o $\mathcal{L}(a^*b^*)$. Si $vwx \in \mathcal{L}(a^+b^+)$, entonces:
+    \begin{itemize}
+        \item $|uv^2wx^2y|_{a,b} > 2N$
+        \item $|uv^2wx^2y|_{c} = N$
+    \end{itemize}
+    Por lo tanto, $z \neq L$. Si $vwx \in \mathcal{L}(b^+c^+)$, entonces:
+    \begin{itemize}
+        \item $|uv^2wx^2y|_{b,c} > 2N$
+        \item $|uv^2wx^2y|_{a} = N$
+    \end{itemize}
+    $z \neq L$. Por lo tanto $uv^2wx^2y \notin L$.
+\end{ej}
+
+\begin{ej}
+    $a^{n^2}$ no es un lenguaje libre de contexto.
+    \begin{enumerate}
+        \item Demonio escoge $N > 0$
+        \item Uno escoge $a^{N^2}$ con $|a^{N^2}| \ge N$
+        \item Demonio escoge $a^{j}a^{k}a^{l}a^{m}a^{n} = a^{N^2}$, con $a^{j} = u$, $a^{k} = v$ ... con $k + m \neq 0$ y $k + l + m \le N$
+        \item Uno escoge $i = 2$
+    \end{enumerate}
+    $|av^2wx^2y| = |a^{k}a^{2k}a^{l}a^{2m}a^{n}| = j + 2k + l + 2m + n = N^2 + k + m \le N^2 + 2N < (N + 1)^2$
+\end{ej}
+
+\begin{proposicion}
+    Para todo lenguaje $L_1$ y $L_2$, $L_1 \cup L_2$ es un lenguaje libre de contexto.
+
+    Existen lenguajes libres de contexto $L$, $L_1$ y $L_2$ tales que:
+    \begin{itemize}
+        \item $L_1 \cap L_2$ no es lenguaje libre de contexto.
+        \item $L^{c}$ no es lenguaje libre de contexto.
+    \end{itemize}
+\end{proposicion}
+
+\begin{proof}
+    \begin{align}
+        L_1 = \{a^{n}b^{n}c^{m} | n \ge 0, m \ge 0\} \\
+        L_2 = \{a^{m}b^{n}c^{n} | n \ge 0, m \ge 0\}
+    \end{align}
+    $L_1$ y $L_2$ son lenguajes libres de contexto, pero $L_1 \cap L_2$ no es lenguaje libre de contexto (dado que $a^{n}b^{n}c^{n}$ no es libre de contexto)
+\end{proof}
 
 
 \end{document}
