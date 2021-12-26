@@ -1,0 +1,58 @@
+\documentclass[letter]{article}
+
+\usepackage{MD_estilo}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+
+\nombre{Matías Duhalde} % Aqui va el nombre del alumno
+\lista{-} % Aqui va el numero de lista
+\numtarea{6} % Aqui va el número de la tarea
+
+\sigla{IIC2223} % Aqui va la sigla del curso
+\curso{Teoría de Autómatas y Lenguajes Formales} % Aqui va el nombre del curso
+\semestre{2} % Aqui va el semestre del curso
+\ano{2021} % Aqui va el año del curso
+
+\def\derives*{\underset{\text{lm}}{\overset{*}{\implies}}}
+
+
+\begin{document}
+
+\begin{pregunta}{1} % Aqui se coloca el número de la pregunta
+
+    Sea $\mathcal{G} = (V, \Sigma, P, S)$ una CFG $LL(k)$, para algún $k$. Por contradicción, supongamos que $\mathcal{G}$ es ambigua, es decir, existe una palabra $w \in \mathcal{L}(G)$ tal que $w$ pueda ser derivada por la izquierda de más de una manera. Se definen las siguientes derivaciones de $w$, con $u, v_1, v_2, w \in \Sigma^*$, $X \in V$, y $\gamma_1, \gamma_2, \beta \in (\Sigma \cup V)^*$:
+
+    \begin{align*}
+        d_1: & \quad S \derives* u X \beta \implies u \gamma_1 \beta \derives* u v_1 = w \\
+        d_2: & \quad S \derives* u X \beta \implies u \gamma_2 \beta \derives* u v_2 = w
+    \end{align*}
+
+    Por nuestra suposición, tenemos que existe más de una derivación distinta por la izquierda para encontrar $w$, por lo que existen $d_1$ y $d_2$ tal que $d_1 \neq d_2$. Entonces, en $d_1$ y $d_2$, existe al menos un paso en el cual se toma una producción distinta, tal que en $d_1$ se toma la producción $X \to \gamma_1$ y en $d_2$ se toma la producción $X \to \gamma_2$, con $\gamma_1 \neq \gamma_2$. Dado que ambas derivaciones producen $w$, $u v_1 = u v_2$ y $v_1 = v_2$, por lo que también se cumple que $v_1|_k = v_2|_k$ para todo $k$. Sin embargo, dado que $\gamma_1 \neq \gamma_2$, la gramática definida no puede ser $LL(k)$, dado que se contradice su definición, por lo que se evidencia una contradicción en lo propuesto.
+
+    Por lo tanto, si una gramática $\mathcal{G}$ es $LL(k)$ para algún $k$, entonces $\mathcal{G}$ no puede ser ambigua (y en consecuencia, \textbf{debe} ser unambigua). \qed
+
+
+
+
+
+
+\end{pregunta}
+
+\begin{pregunta}{2} % Aqui se coloca el número de la pregunta
+
+    Definición de LL(k) fuerte: Para todas dos reglas distintas $Y \to \gamma_1, Y \to\gamma_2 \in P$ se tiene que:
+
+    $$\text{\texttt{first}}_k(\gamma_1) \odot_k \text{\texttt{follow}}_k(Y) \cap \text{\texttt{first}}_k(\gamma_2) \odot_k \text{\texttt{follow}}_k(Y) = \emptyset$$
+
+
+    \subsection*{1.}
+
+
+
+
+    \subsection*{2.}
+
+\end{pregunta}
+
+\end{document}
