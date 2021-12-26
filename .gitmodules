@@ -1,0 +1,9 @@
+[submodule "IIC2283/IIC2283-2-21"]
+	path = IIC2283/IIC2283-2-21
+	url = git@github.com:marceloarenassaavedra/IIC2283-2-21.git
+[submodule "IIC2283/2021-IIC2283-Tareas"]
+	path = IIC2283/2021-IIC2283-Tareas
+	url = git@github.com:PUC-IIC2283/2021-IIC2283-Tareas.git
+[submodule "IIC2283/IIC2283-Tareas"]
+	path = IIC2283/IIC2283-Tareas
+	url = git@github.com:MatiasDuhalde/IIC2283-Tareas.git
